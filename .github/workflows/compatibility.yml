@@ -1,0 +1,18 @@
+name: v1 compatibility
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check official vectors and edge cases
+        run: node compatibility.mjs
+      - name: Check distributed file hashes and APK page identity
+        run: |
+          sha256sum -c SHA256SUMS.txt
+          unzip -p SiteKey16-v1.0-compatible.apk assets/index.html | cmp - index.html
