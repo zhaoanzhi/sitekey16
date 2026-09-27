@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>SiteKey 16</title>
+<style>
+[hidden]{display:none!important}
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#eef3fc;background:#0b1020;font-synthesis:none;--muted:#a7b4ca;--line:#2e3b55;--accent:#a6efca}
+*{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;padding:32px 20px}main{width:100%;max-width:470px}header{margin-bottom:30px}.brand{display:flex;align-items:center;gap:14px}.mark{width:48px;height:48px;flex-shrink:0;display:grid;place-items:center;border:1px solid #607f75;color:var(--accent);font:700 21px ui-monospace,monospace;border-radius:13px}h1{font-size:30px;letter-spacing:-1px;margin:0}.version{color:var(--muted);font-size:14px;margin:4px 0 0}.intro{color:var(--muted);line-height:1.7;margin:18px 0 0;font-size:16px}.panel{padding:26px;border:1px solid var(--line);background:#121b2e;border-radius:20px;box-shadow:0 22px 70px #0004}.field{margin-bottom:23px}label{display:block;font-size:15px;font-weight:600;margin-bottom:10px}.input-row{position:relative}input{width:100%;min-width:0;border:1px solid #41506a;background:#0d1424;border-radius:10px;color:#f3f7ff;font:inherit;font-size:16px;padding:14px 13px;outline:none}input::placeholder{color:#8493ac}input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #a6efca14}#master{padding-right:74px}button{font:inherit;cursor:pointer;min-height:46px;border-radius:10px;border:1px solid var(--line);transition:background .15s}button:focus-visible{outline:3px solid #a6efca;outline-offset:3px}button:disabled{opacity:.5;cursor:wait}.visibility{position:absolute;right:5px;top:4px;color:var(--accent);background:transparent;border:0;padding:0 13px;font-size:14px}.hint{font-size:13px;color:var(--muted);line-height:1.6;margin:8px 0 0}.generate{width:100%;background:var(--accent);color:#0c2720;font-weight:700;border:0;padding:14px}.generate:hover:enabled{background:#c1f7dc}.result{border-top:1px solid var(--line);padding-top:22px;margin-top:24px}.result-head{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:14px;margin-bottom:12px}.output{font:600 clamp(16px,4.8vw,22px) ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:1px;text-align:center;color:var(--accent);padding:17px 6px;user-select:all}.actions{display:flex;gap:10px;margin-top:12px}.actions button{flex:1;padding:8px;color:#e1eaf8;background:#1c2940}.actions button:hover:enabled{background:#283955}.status{color:var(--muted);min-height:23px;line-height:1.6;font-size:13px;margin:12px 0 0;overflow-wrap:anywhere}footer{color:var(--muted);font-size:13px;line-height:1.7;text-align:center;margin:23px 6px 0}.test-state{color:var(--accent);margin-bottom:7px}a{color:var(--accent)}@media(max-width:370px){body{padding:24px 14px}.panel{padding:20px}.output{letter-spacing:0}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="brand"><span class="mark" aria-hidden="true">16</span><div><h1>SiteKey 16</h1><p class="version">Algorithm: v1 · APK compatible</p></div></div><p class="intro">一个主密码，为不同网站生成固定的 16 位密码。</p></header>
+<section class="panel" aria-label="密码生成器">
+<form id="generator" autocomplete="off">
+<div class="field"><label for="master">主密码</label><div class="input-row"><input id="master" type="password" placeholder="输入你的主密码" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-describedby="master-hint"><button class="visibility" id="toggle" type="button" aria-controls="master" aria-pressed="false">显示</button></div><p class="hint" id="master-hint">大小写、空格和所有字符都会原样参与计算。</p></div>
+<div class="field"><label for="site">网站名</label><input id="site" type="text" placeholder="例如 google.com 或 Steam" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="go"><p class="hint">也可粘贴完整网址，按 v1 规则提取网站名。</p></div>
+<button id="generate" class="generate" type="submit" disabled>生成密码</button>
+</form>
+<div class="result"><div class="result-head"><span>生成结果</span><span>16 位 · v1</span></div><label for="output" hidden>生成的密码</label><input id="output" class="output" type="text" readonly placeholder="— — — —" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"><div class="actions"><button id="copy" type="button" disabled>复制密码</button><button id="clear" type="button">清空</button></div><p id="status" class="status" role="status" aria-live="polite">输入主密码和网站名后生成。</p></div>
+</section>
+<footer><div id="test-state" class="test-state" role="status">正在校验 v1 兼容性…</div><div>仅在本机计算 · 不保存输入 · 无网络请求</div><div>复制后，生成的密码会进入系统剪贴板。</div></footer>
+</main>
+<script id="sitekey16-core">
+'use strict';
+globalThis.SiteKey16 = (() => {
+  const U = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const L = 'abcdefghijkmnopqrstuvwxyz';
+  const D = '23456789';
+  const S = '!@#$%^&*_-+=';
+  const A = U + L + D + S;
+  function normalizeSite(s) {
+    s = s.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '');
+    s = s.split(/[\/?#]/)[0].replace(/\.+$/, '');
+    return s;
+  }
+  async function derive(masterPassword, site) {
+    const normalizedSite = normalizeSite(site);
+    // Two ASCII characters per separator: 0x5c, 0x30. NEVER a NUL byte.
+    const input = 'sitekey16:v1\\0' + normalizedSite + '\\0' + masterPassword;
+    const h = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input)));
+    const c = [U[h[0] % U.length], L[h[1] % L.length], D[h[2] % D.length], S[h[3] % S.length]];
+    for (let i = 4; i < 16; i++) c[i] = A[h[i] % A.length];
+    let t = 16;
+    for (let p = 15; p > 0; p--, t++) {
+      const j = h[t % 32] % (p + 1);
+      const temp = c[p]; c[p] = c[j]; c[j] = temp;
+    }
+    return {normalizedSite, sha256: Array.from(h, x => x.toString(16).padStart(2, '0')).join(''), password: c.join('')};
+  }
+  const vectors = Object.freeze([
+    Object.freeze(['MasterPass!Long123', 'google.com', 'google.com', '18fb6b02e2582fc0e080444ca6128883b6890a2fa6a11ab13ed73f1a438843fc', 'A+VHb#Ve#^7UT=5y']),
+    Object.freeze(['correct horse battery staple', 'https://www.github.com/login?x=1', 'github.com', 'e0201d90e3cc43fb2c48c8a2c09806b2c9fe0f948d7c5b8814a6580c98930e13', 'v+^J7v7WaQ!r-hGD']),
+    Object.freeze(['测试主密码123!', 'Steam', 'steam', '0e901f671745a8c3794b7d348bead9b15859adcbfd0dd082218f5f8505fb6ea2', 'GQ9!gd*5ZB9uqAL5']),
+    Object.freeze(['abc123', 'www.google.com/path?q=1', 'google.com', '5bdb8d9075a235530a88cae7978f8fef0f9f9478e8750ca489a7bb57cafa313c', 'VPaaF*6uF7Qz!L+i'])
+  ]);
+  async function selfTest() {
+    for (const [master, site, normalized, hex, password] of vectors) {
+      const actual = await derive(master, site);
+      if (actual.normalizedSite !== normalized || actual.sha256 !== hex || actual.password !== password) throw new Error('v1 compatibility failure');
+    }
+    return vectors.length;
+  }
+  return Object.freeze({normalizeSite, derive, vectors, selfTest});
+})();
+</script>
+<script id="sitekey16-ui">
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const master = $('master'), site = $('site'), output = $('output');
+  let revision = 0, ready = false;
+  function invalidate() {
+    revision++; output.value = ''; $('copy').disabled = true;
+    $('generate').disabled = !ready;
+    $('status').textContent = '输入主密码和网站名后生成。';
+  }
+  master.addEventListener('input', invalidate); site.addEventListener('input', invalidate);
+  $('toggle').addEventListener('click', () => {
+    const show = master.type === 'password'; master.type = show ? 'text' : 'password';
+    $('toggle').textContent = show ? '隐藏' : '显示'; $('toggle').setAttribute('aria-pressed', String(show));
+  });
+  $('clear').addEventListener('click', () => {
+    master.value = ''; site.value = ''; master.type = 'password';
+    $('toggle').textContent = '显示'; $('toggle').setAttribute('aria-pressed', 'false');
+    invalidate(); master.focus();
+  });
+  $('generator').addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!ready) return;
+    invalidate();
+    if (!master.value.length) { $('status').textContent = '请输入主密码。'; master.focus(); return; }
+    if (!SiteKey16.normalizeSite(site.value)) { $('status').textContent = '请输入有效的网站名。'; site.focus(); return; }
+    const job = revision;
+    $('generate').disabled = true;
+    try {
+      const result = await SiteKey16.derive(master.value, site.value);
+      if (job !== revision) return;
+      output.value = result.password; $('copy').disabled = false;
+      $('status').textContent = '已生成 · 网站：' + result.normalizedSite;
+    } catch (_) { if (job === revision) $('status').textContent = '计算失败，请使用支持 Web Crypto 的浏览器重试。'; }
+    finally { if (job === revision) $('generate').disabled = !ready; }
+  });
+  $('copy').addEventListener('click', async () => {
+    if (!output.value) return;
+    const job = revision;
+    try {
+      if (globalThis.SiteKeyClipboard && typeof SiteKeyClipboard.copy === 'function') {
+        if (!SiteKeyClipboard.copy(output.value)) throw new Error('Clipboard unavailable');
+      } else if (navigator.clipboard && globalThis.isSecureContext) {
+        await navigator.clipboard.writeText(output.value);
+      } else {
+        output.focus(); output.select(); output.setSelectionRange(0, output.value.length);
+        if (!document.execCommand('copy')) throw new Error('Clipboard unavailable');
+      }
+      if (job === revision) $('status').textContent = '已复制密码。';
+    } catch (_) { if (job === revision) { output.focus(); output.select(); $('status').textContent = '自动复制不可用，请长按或手动复制结果。'; } }
+  });
+  // Never persist credentials or restore them from browser history.
+  addEventListener('pagehide', () => { master.value = ''; site.value = ''; invalidate(); });
+  SiteKey16.selfTest().then(count => {
+    ready = true; $('generate').disabled = false;
+    $('test-state').textContent = 'v1 兼容自检通过 · ' + count + '/4';
+  }).catch(() => {
+    $('test-state').textContent = '兼容自检未通过，已停止生成。';
+    $('status').textContent = '请使用 HTTPS 页面或更新 Android System WebView 后重试。';
+  });
+})();
+</script>
+</body>
+</html>
